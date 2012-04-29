@@ -1,0 +1,9 @@
+
+# Ignore archive and log files that might cause an endless sync cycle
+ignore = Path */.unisync/*.log
+ignore = Path */.unisync/unison/*
+
+# Don't confirm on delets
+confirmbigdel=false
+
+merge = Name * -> echo -e "\nWARNING: CONFLICTS DETECTED\n" && unisync-conflict-resolve CURRENT1 CURRENT2 NEW || echo -e "\nERROR: UNABLE TO RESOLVE CONFLICT\n"

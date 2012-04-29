@@ -1,0 +1,77 @@
+unisync_dir = os.getenv("HOME") .."/.unisync"
+sync_req_dir = unisync_dir .. "/sync_request"
+
+settings = {
+   logfile = unisync_dir .. "/lsyncd.log",
+   statusFile = unisync_dir .. "/lsyncd.status",
+   nodaemon = true,
+   maxProcesses = 1
+}
+
+server_update = {
+   delay = 5,
+   
+   action = function(inlet)
+               local elist = inlet.getEvents()
+               local paths = elist.getPaths()
+               local config = inlet.getConfig()
+               
+               --remove leading / from paths for unison
+               local unisonPaths = {}
+               for _, pathStr in ipairs(paths) do
+                  local path = string.sub(pathStr, 2)
+                  table.insert(unisonPaths, path)
+               end
+               local pathsOpt = "-path " .. table.concat(unisonPaths," -path ")
+
+               --remove trailing / from source so we can better compare roots
+               local sourceOpt = config.source
+               if( string.sub(sourceOpt, -1) == "/" ) then
+                  sourceOpt = string.sub(sourceOpt, 1, -2)
+               end
+               
+               -- Sync all clients with the new updates
+               -- TODO: Find a way to check against the excludes (ignores) from each client
+               log("Normal", "Local files changed. Syncing...\n")
+               spawnShell(elist, "unisync-update-clients $1 $2",
+                     sourceOpt, pathsOpt)
+            end,
+   
+   init = function(event)
+             local inlet = event.inlet;
+             local config = inlet.getConfig()
+             
+             --remove trailing / from source so we can better compare roots
+             local sourceOpt = config.source
+             if( string.sub(sourceOpt, -1) == "/" ) then
+                sourceOpt = string.sub(sourceOpt, 1, -2)
+             end
+
+             spawnShell(event, "unisync-server-syncinit $1 $2", config.unisync_id, sourceOpt)
+          end
+
+}
+
+sync_request = {
+   delay = 1,
+
+   onCreate = function(event)
+                 -- remove leading / from the path
+                 local pathOpt = event.path
+                 if (string.sub(pathOpt, 1, 1) == "/") then
+                    pathOpt = string.sub(pathOpt, 2)
+                 end
+
+                 spawnShell(event, "unisync-sync-client $1", pathOpt)
+              end
+}
+
+
+-- Watch for new sync_requests
+sync {
+   sync_request,
+   source = sync_req_dir,
+}
+
+
+dofile(unisync_dir .. "/unisync-server.lua")
