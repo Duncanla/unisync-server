@@ -12,7 +12,7 @@ sync_req_dir=$UNISYNC_DIR/sync_request
 sync_file=$UNISYNC_DIR/syncs
 
 monitor_dir=$UNISYNC_DIR/monitors
-monitor_cmd=unisync-client-mon
+monitor_cmd="@unisync-client-mon@"
 
 pid_file=$UNISYNC_DIR/unisync-server.pid
 
