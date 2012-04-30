@@ -10,8 +10,6 @@
 # published by the Free Software Foundation. See COPYING for more details.
 #
 
-# This script is intended to deal with unison merges.
-# Usage: conflict_resolve CURRENT1 CURRENT2 NEW
 
 set -e
 set -u
