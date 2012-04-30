@@ -1,4 +1,14 @@
-#!/bin/bash
+# -* bash -*
+
+#
+# Unisync server
+# 
+# Copyright (c) 2012, Luke Duncan <Duncan72187@gmail.com>
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public license version 2 as
+# published by the Free Software Foundation. See COPYING for more details.
+#
 
 set -e
 set -u
@@ -17,6 +27,51 @@ monitor_cmd="@unisync-client-mon@"
 pid_file=$UNISYNC_DIR/unisync-server.pid
 
 client_lock_file=$UNISYNC_DIR/client_lock
+
+function usage {
+    cat << EOF
+Usage:
+% unisync-server [OPTION]
+
+Options: 
+    --help      Print this message
+    --version   Print version information
+
+Submit bug reports at github.com/Duncanla/unisync-server
+EOF
+}
+
+function version {
+    cat <<EOF
+unisync-server @VERSION@
+Unisync server for real-time file synchronization
+
+This is free software, and you are welcome to redistribute it and modify it 
+under certain conditions. There is ABSOLUTELY NO WARRANTY for this software.
+For legal details see the GNU General Public License.
+
+EOF
+}
+
+# Parse options
+if test $# -ne 0
+then
+  case $1 in
+  --help)
+    usage
+    exit
+    ;;
+  --version)
+    version
+    exit
+    ;;
+  *)
+    usage
+    exit
+    ;;
+  esac
+fi
+
 
 # Cleanup for trapped signals
 function cleanup {

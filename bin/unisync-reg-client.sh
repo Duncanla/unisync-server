@@ -1,4 +1,14 @@
-#!/bin/bash
+# -* bash -*
+
+#
+# Unisync client registration
+# 
+# Copyright (c) 2012, Luke Duncan <Duncan72187@gmail.com>
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public license version 2 as
+# published by the Free Software Foundation. See COPYING for more details.
+#
 
 set -e
 set -u
@@ -17,6 +27,36 @@ sync_req_cmd=@pkglibexecdir@/@unisync-sync-req@
 port=$1
 shift
 options="$@"
+
+function usage {
+    cat << EOF
+Usage:
+% unisync-client-reg [OPTION] PORT
+
+NOTE: This script is intended for use by unisync-client
+
+Register the client on the server with port PORT
+
+Options:
+    --help      Print this message
+    --version   Print version information
+
+Submit bug reports at github.com/Duncanla/unisync-server
+EOF
+}
+
+function version {
+    cat <<EOF
+unisync-reg-client @VERSION@
+Unisync server for real-time file synchronization
+
+This is free software, and you are welcome to redistribute it and modify it 
+under certain conditions. There is ABSOLUTELY NO WARRANTY for this software.
+For legal details see the GNU General Public License.
+
+EOF
+}
+
 
 # Cleanup for signal traps
 function cleanup() {

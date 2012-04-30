@@ -1,4 +1,14 @@
-#!/bin/bash
+# -* bash -*
+
+#
+# Unisync server
+# 
+# Copyright (c) 2012, Luke Duncan <Duncan72187@gmail.com>
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public license version 2 as
+# published by the Free Software Foundation. See COPYING for more details.
+#
 
 set -e
 set -u
@@ -16,6 +26,56 @@ sync_file=$UNISYNC_DIR/syncs
 port=$1
 shift
 options="$@"
+
+function usage {
+    cat << EOF
+Usage:
+% unisync-sync-req [OPTION] PORT CLIENT_OPTIONS
+
+Note: This script is intended for use by unisync-client
+
+Submit a sync request to the server for the client connected to PORT
+with the CLIENT_OPTIONS being passed to unison.
+
+Options: 
+    --help      Print this message
+    --version   Print version information
+
+Submit bug reports at github.com/Duncanla/unisync-server
+EOF
+}
+
+function version {
+    cat <<EOF
+unisync-sync-req @VERSION@
+Unisync server for real-time file synchronization
+
+This is free software, and you are welcome to redistribute it and modify it 
+under certain conditions. There is ABSOLUTELY NO WARRANTY for this software.
+For legal details see the GNU General Public License.
+
+EOF
+}
+
+# Parse options
+if test $# -ne 0
+then
+  case $1 in
+  --help)
+    usage
+    exit
+    ;;
+  --version)
+    version
+    exit
+    ;;
+  *)
+    usage
+    exit
+    ;;
+  esac
+fi
+
 
 # Cleanup for signal traps
 function cleanup() {
