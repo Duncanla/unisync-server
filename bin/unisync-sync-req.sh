@@ -3,7 +3,7 @@
 set -e
 set -u
 
-etc_dir=/home/luke/unisync/server
+etc_dir=@pkgsysconfdir@
 
 unisync_conf=$etc_dir/unisync-server.conf
 source $unisync_conf

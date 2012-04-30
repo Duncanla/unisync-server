@@ -1,9 +1,20 @@
-#!/bin/bash
+# -* bash -*
+
+#
+# Unisync client updater
+# 
+# Copyright (c) 2012, Luke Duncan <Duncan72187@gmail.com>
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public license version 2 as
+# published by the Free Software Foundation. See COPYING for more details.
+#
+
 
 set -e
 set -u
 
-etc_dir=/home/luke/unisync/server
+etc_dir=@pkgsysconfdir@
 
 unisync_conf=$etc_dir/unisync-server.conf
 source $unisync_conf
@@ -46,7 +57,7 @@ do
         log_msg "Syncing client $client with options:"
         log_msg "$client_options $paths"
         set +e
-        bash -c "UNISON=$unison_dir unison -ui text -batch $unison_profile $client_options $paths"
+        bash -c "UNISON=$unison_dir @UNISON@ -ui text -batch $unison_profile $client_options $paths"
         set -e
     else
         err_msg "Skipping client $client: Not syncing to root $root2"

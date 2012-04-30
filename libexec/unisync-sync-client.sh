@@ -1,9 +1,20 @@
-#!/bin/bash
+# -* bash -*
+
+#
+# Unisync client synchronization
+# 
+# Copyright (c) 2012, Luke Duncan <Duncan72187@gmail.com>
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public license version 2 as
+# published by the Free Software Foundation. See COPYING for more details.
+#
+
 
 set -e
 set -u
 
-etc_dir=/home/luke/unisync/server
+etc_dir=@pkgsysconfdir@
 
 unisync_conf=$etc_dir/unisync-server.conf
 source $unisync_conf
@@ -56,7 +67,7 @@ log_msg "Sync request options: $sync_req_options"
 # Unison returns an exit code of 1 if there is nothing to propagate,
 # so don't exit on that error
 set +e
-bash -c "UNISON=$unison_dir unison -ui text -batch $unison_profile $sync_req_options"
+bash -c "UNISON=$unison_dir @UNISON@ -ui text -batch $unison_profile $sync_req_options"
 log_msg "Unison sync exited with code $?"
 set -e
 

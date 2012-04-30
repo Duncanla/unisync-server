@@ -3,7 +3,7 @@
 set -e
 set -u
 
-etc_dir=/home/luke/unisync/server
+etc_dir=@pkgsysconfdir@
 
 source $etc_dir/unisync-server.conf
 
@@ -97,6 +97,7 @@ rm -f $sync_req_dir/*
 rm -f $sync_file
 rm -f $client_lock_file
 
+# Start lsyncd
 log_msg "Starting lsync..."
 lsyncd -log all $etc_dir/unisync-server.lua
 err_msg "lsyncd died"

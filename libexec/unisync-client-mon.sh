@@ -1,9 +1,22 @@
-#!/bin/bash
+# -* bash -*
+
+#
+# Unisync client monitor
+# 
+# Copyright (c) 2012, Luke Duncan <Duncan72187@gmail.com>
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public license version 2 as
+# published by the Free Software Foundation. See COPYING for more details.
+#
+
+# This script is intended to deal with unison merges.
+# Usage: conflict_resolve CURRENT1 CURRENT2 NEW
 
 set -e
 set -u
 
-etc_dir=/home/luke/unisync/server
+etc_dir=@pkgsysconfdir@
 
 unisync_conf=$etc_dir/unisync-server.conf
 source $unisync_conf

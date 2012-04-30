@@ -6,4 +6,4 @@ ignore = Path */.unisync/unison/*
 # Don't confirm on delets
 confirmbigdel=false
 
-merge = Name * -> echo -e "\nWARNING: CONFLICTS DETECTED\n" && unisync-conflict-resolve CURRENT1 CURRENT2 NEW || echo -e "\nERROR: UNABLE TO RESOLVE CONFLICT\n"
+merge = Name * -> echo -e "\nWARNING: CONFLICTS DETECTED\n" && @pkglibexecdir@/@unisync-conflict-resolve@ CURRENT1 CURRENT2 NEW || echo -e "\nERROR: UNABLE TO RESOLVE CONFLICT\n"

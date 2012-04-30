@@ -33,7 +33,7 @@ server_update = {
                -- Sync all clients with the new updates
                -- TODO: Find a way to check against the excludes (ignores) from each client
                log("Normal", "Local files changed. Syncing...\n")
-               spawnShell(elist, "unisync-update-clients $1 $2",
+               spawnShell(elist, "@pkglibexecdir@/@unisync-update-clients@ $1 $2",
                      sourceOpt, pathsOpt)
             end,
    
@@ -47,7 +47,7 @@ server_update = {
                 sourceOpt = string.sub(sourceOpt, 1, -2)
              end
 
-             spawnShell(event, "unisync-server-syncinit $1 $2", config.unisync_id, sourceOpt)
+             spawnShell(event, "@pkglibexecdir@/@unisync-server-syncinit@ $1 $2", config.unisync_id, sourceOpt)
           end
 
 }
@@ -62,7 +62,7 @@ sync_request = {
                     pathOpt = string.sub(pathOpt, 2)
                  end
 
-                 spawnShell(event, "unisync-sync-client $1", pathOpt)
+                 spawnShell(event, "@pkglibexecdir@/unisync-sync-client $1", pathOpt)
               end
 }
 

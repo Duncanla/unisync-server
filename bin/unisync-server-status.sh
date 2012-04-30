@@ -3,11 +3,11 @@
 set -e
 set -u
 
-etc_dir=/home/luke/unisync/server
+etc_dir=@pkgsysconfdir@
 source $etc_dir/unisync-server.conf
 
 server_pid_file=$UNISYNC_DIR/unisync-server.pid
-server_cmd=unisync-server
+server_cmd="@unisync-server@"
 
 trap "echo 'Failed to determine server stats'; exit $?" INT TERM EXIT
 
