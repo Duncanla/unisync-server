@@ -19,7 +19,7 @@ do_subst = sed -i -e 's,[@]pkgsysconfdir[@],$(pkgsysconfdir),g' \
 			      -e 's,[@]VERSION[@],$(VERSION),g' \
 				  -e 's,[@]pkglibexecdir[@],$(pkglibexecdir),g'
 
-cmd_subst = sed -i -e "s/[@]UNISON[@]/$(UNISON)/g"
+cmd_subst = sed -i -e "s,[@]UNISON[@],$(UNISON),g"
 
 
 $(pkglibexec_SCRIPTS):%: %.sh

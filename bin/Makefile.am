@@ -16,14 +16,14 @@ CLEANFILES = $(bin_SCRIPTS)
 pkgsysconfdir = $(sysconfdir)/$(PACKAGE)
 
 do_subst = sed -i -e 's,[@]pkgsysconfdir[@],$(pkgsysconfdir),g' \
-			      -e 's,[@]VERSION[@],$(VERSION),g'
+			      -e 's,[@]VERSION[@],$(VERSION),g' \
 			      -e 's,[@]pkglibexecdir[@],$(pkglibexecdir),g'
 
-sync_req_cmd = `echo unisync-sync-req | sed $(program_name_transform}`
-server_cmd = `echo unisync-server | sed $(program_name_transform}`
+sync_req_cmd = `echo unisync-sync-req | sed '$(program_name_transform)'`
+server_cmd = `echo unisync-server | sed '$(program_name_transform)'`
 
-cmd_subst = sed -i -e "s,@sync_req_cmd@,$(sync_req_cmd),g"
-				   -e "s,@server_cmd@,$(server_cmd},g"
+cmd_subst = sed -i -e "s,[@]sync_req_cmd[@],$(sync_req_cmd),g" \
+				   -e "s,[@]server_cmd[@],$(server_cmd),g"
 
 $(bin_SCRIPTS): %: %.sh
 	rm -f $@

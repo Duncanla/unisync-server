@@ -20,7 +20,7 @@ cmd_subst = sed -i -e "s/[@]unisync-sync-client[@]/$(sync_name)/" \
 				   -e "s/[@]unisync-update-clients[@]/$(update_name}"
 				   -e "s/[@]unisync-conflict-resolve[@]/$(conflict_res_name)"
 
-unisync-client.lua: %: %.in
+unisync-server.lua: %: %.in
 	rm -f $@
 	cat $^ >> $@
 	$(do_subst) $@
