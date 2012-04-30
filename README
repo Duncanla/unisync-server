@@ -1,13 +1,12 @@
 
 ==============
-Unisync Client
+Unisync Server
 ==============
 
 Unisync is a bi-directional live syncing solution that makes use of:
 
 unison (http://www.cis.upenn.edu/~bcpierce/unison/)
 lsyncd (https://github.com/axkibe/lsyncd)
-autossh (http://www.harding.motd.ca/autossh/)
 
 Unisync is a collection of bash scripts that combine these tools to
 sync a directory tree with a remote host in real time.
@@ -23,19 +22,19 @@ client.
 Configuration
 =============
 
-On the first run, unisync-client will create a ~/.unisync directory
-and place a skeleton configuration file name unisync-client.lua. This
+On the first run, unisync-server will create a ~/.unisync directory
+and place a skeleton configuration file name unisync-server.lua. This
 configuration file is simply part of the lsyncd configuration and
 thus, you may consult the lsyncd documetation for the syntax. Once the
 correct information is in this file, you should be able to run
-unisync-client to connect to a unisync server.
+unisync-server to start the server.
 
 Further configuration is provided in the
-/etc/unisyncd/unisync-client.conf file
+/etc/unisyncd/unisync-server.conf file
 
 =======
 Running
 =======
 
-Starting the Unisync client is as simple as running unisync-client
-from the commandline
+Starting the unisync server is as simple as running unisync-server
+from the command line
