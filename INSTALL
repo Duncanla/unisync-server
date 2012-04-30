@@ -1,0 +1,29 @@
+
+=============
+Prerequisites
+=============
+
+The unisync server depends on these programs. Make sure that they are
+installed prior to installing the client.
+
+- Bash
+- Lsyncd (Version 2.0.7 or later)
+- Unison
+
+============
+Installation
+============
+
+If you pulled the source from git, run autogen:
+
+./autogen.sh
+
+To install the server, execute the following in the root directory of
+the code:
+
+./configure
+make
+su -c 'make install'
+
+The server is now installed. You can run it with the unisync-server
+command.
