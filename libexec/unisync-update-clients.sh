@@ -58,7 +58,18 @@ do
         log_msg "$client_options $paths"
         set +e
         bash -c "UNISON=$unison_dir @UNISON@ -ui text -batch $unison_profile $client_options $paths"
+        unison_exit_code=$?
         set -e
+        
+        # If there was a fatal error in unsion, one of the archives
+        # may have been screwed up. Try again, ignoring the archives
+        if [ $unison_exit_code -eq 3 ]
+        then
+            set +e
+            bash -c "UNISON=$unison_dir @UNISON@ -ui text -batch $unison_profile -ignorearchives $client_options $paths"
+            unison_exit_code=$?
+            set -e
+        fi
     else
         err_msg "Skipping client $client: Not syncing to root $root2"
         err_msg "Client options were $client_options"

@@ -67,10 +67,22 @@ log_msg "Sync request options: $sync_req_options"
 # Unison returns an exit code of 1 if there is nothing to propagate,
 # so don't exit on that error
 set +e
-bash -c "UNISON=$unison_dir @UNISON@ -ui text -batch $unison_profile $sync_req_options"
-log_msg "Unison sync exited with code $?"
+bash -c "UNISON=$unison_dir @UNISON@ $unison_profile -ui text -batch $sync_req_options" 
+unison_exit_code=$?
+log_msg "Unison sync exited with code $unison_exit_code"
 set -e
 
+# If a fatal error occured in unison, it might be that one of the
+# archives was messed up. Try again, ignoring the archives
+if [ $unison_exit_code -eq 3 ]
+then
+    err_msg "Unison fatal error detected. Trying again with -ignorearchives."
+    set +e
+    bash -c "UNISON=$unison_dir @UNISON@ $unison_profile -ui text -batch -ignorearchives $sync_req_options"
+    unison_exit_code=$?
+    log_msg "Unison sync exited with code $unison_exit_code"
+    set -e
+fi
 rm -f $sync_req_file
 
 trap - EXIT
