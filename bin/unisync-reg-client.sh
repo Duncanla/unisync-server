@@ -146,7 +146,7 @@ log_msg "Port: $port"
 #Make sure we aren't duplicating a left-over client file
 client_file=$(echo $client_dir/$port-`ls $client_dir | egrep -c ^$port-[0-9]+`)
 
-echo "Client file: $client_file" 
+log_msg "Client file: $client_file" 
 
 if [ `ls $client_dir | egrep -c ^$port-[0-9]+` -ne 0 ]
 then
@@ -161,15 +161,16 @@ then
     done
 fi
 
-root=$(cat $sync_file | sed -r "s|$target_id\s+(.*)|\1|")
-target_options=`echo $options | sed -r "s|\-targetid\s+\S+|\-root $root|"`
-#target_options=$(echo "$options")
-echo $target_options
+root=$(cat $sync_file | sed -r "s|$target_id\s+(.*)|\1|" | head -n 1)
+target_options=$(echo $options | sed -r "s|\-targetid\s+\S+|\-root ${root}|")
+
 echo $target_options > $client_file
 
 rm -f $lockfile
 
 $sync_req_cmd $port $target_options
+
+log_msg "Client registered on port $port"
 
 trap - EXIT
 exit 0
