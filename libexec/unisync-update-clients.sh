@@ -65,6 +65,7 @@ do
         # may have been screwed up. Try again, ignoring the archives
         if [ $unison_exit_code -eq 3 ]
         then
+            err_msg "Unisync encountered fatal error. Retrying with -ignorearchives"
             set +e
             bash -c "UNISON=$unison_dir @UNISON@ -ui text -batch $unison_profile -ignorearchives $client_options $paths"
             unison_exit_code=$?

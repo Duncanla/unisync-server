@@ -105,7 +105,7 @@ echo $$ > $monitor_file
 
 # SSH back to the client on the reverse tunnel port
 # to catch when the tunnel is closed
-ssh -N -o "ServerAliveInterval 60" -o "ServerAliveCountMax 3" -p $port localhost &
+ssh -N -o "UserKnownHostsFile /dev/null" -o "StrictHostKeyChecking no" -o "ServerAliveInterval 60" -o "ServerAliveCountMax 3" -p $port localhost &
 ssh_pid=$!
 
 # Wait for tunnel to close -- we expect nonzero exit codes here
