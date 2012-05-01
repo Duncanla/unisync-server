@@ -21,6 +21,8 @@ source $unisync_conf
 client_dir=$UNISYNC_DIR/clients
 sync_req_dir=$UNISYNC_DIR/sync_request
 
+status_cmd=@bindir@/@unisync-server-status@
+
 function usage {
     cat << EOF
 Usage:
@@ -98,7 +100,7 @@ function log_msg() {
 }
 
 # Exit if the server is not running
-if ! ( unisync-server-status &> /dev/null )
+if ! ( $status_cmd &> /dev/null )
 then
     err_msg "Server is not running!"
     exit 3

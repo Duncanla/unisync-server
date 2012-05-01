@@ -26,6 +26,50 @@ sync_req_dir=$UNISYNC_DIR/sync_request
 monitor_dir=$UNISYNC_DIR/monitors
 monitor_file=$monitor_dir/$port
 
+function usage {
+    cat << EOF
+Usage:
+% unisync-client-mon [OPTION] PORT
+
+NOTE: This script is intended for use by unisync-client
+
+Opens up an ssh connection back to the client on PORT for monitoring.
+
+Options: 
+    --help      Print this message
+    --version   Print version information
+
+Submit bug reports at github.com/Duncanla/unisync-server
+EOF
+}
+
+function version {
+    cat <<EOF
+unisync-client-mon @VERSION@
+Unisync server for real-time file synchronization
+
+This is free software, and you are welcome to redistribute it and modify it 
+under certain conditions. There is ABSOLUTELY NO WARRANTY for this software.
+For legal details see the GNU General Public License.
+
+EOF
+}
+
+# Parse options
+if test $# -ne 0
+then
+  case $1 in
+  --help)
+    usage
+    exit
+    ;;
+  --version)
+    version
+    exit
+    ;;
+  esac
+fi
+
 
 function cleanup() {
     # Kill the ssh process

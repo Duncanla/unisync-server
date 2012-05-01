@@ -62,7 +62,7 @@ sync_request = {
                     pathOpt = string.sub(pathOpt, 2)
                  end
 
-                 spawnShell(event, "@pkglibexecdir@/unisync-sync-client $1", pathOpt)
+                 spawnShell(event, "@pkglibexecdir@/@unisync-sync-client@ $1", pathOpt)
               end
 }
 

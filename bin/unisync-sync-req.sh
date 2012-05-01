@@ -23,6 +23,10 @@ sync_req_dir=$UNISYNC_DIR/sync_request
 
 sync_file=$UNISYNC_DIR/syncs
 
+status_cmd=@bindir@/@unisync-server-status@
+
+lockfile=$UNISYNC_DIR/sync_req_lock
+
 port=$1
 shift
 options="$@"
@@ -69,10 +73,6 @@ then
     version
     exit
     ;;
-  *)
-    usage
-    exit
-    ;;
   esac
 fi
 
@@ -109,7 +109,7 @@ function log_msg() {
 trap cleanup INT TERM EXIT
 
 # Check that the server is running
-if ! (unisync-server-status &> /dev/null)
+if ! ($status_cmd &> /dev/null)
 then
     err_msg "Server is not running!"
     exit 3
@@ -117,7 +117,6 @@ fi
 
 
 # Lock the sync_request directory
-lockfile=$UNISYNC_DIR/sync_req_lock
 lock_tries=0
 while ! ( set -o noclobber; echo "$$" > "$lockfile" ) &> /dev/null 
 do

@@ -1,6 +1,5 @@
 
-pkglibexec_SCRIPTS = unisync-client-mon \
-					 unisync-conflict-resolve \
+pkglibexec_SCRIPTS = unisync-conflict-resolve \
 					 unisync-server-syncinit \
 					 unisync-sync-client \
 					 unisync-update-clients

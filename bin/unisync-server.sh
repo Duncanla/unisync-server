@@ -28,6 +28,13 @@ pid_file=$UNISYNC_DIR/unisync-server.pid
 
 client_lock_file=$UNISYNC_DIR/client_lock
 
+user_conf_file=$UNISYNC_DIR/unisync-server.lua
+blank_user_conf=$etc_dir/unisync-server-user.lua
+
+unison_conf=$etc_dir/unisync.prf
+unison_dir=$UNISYNC_DIR/unison
+unison_conf_user=$unison_dir/unisync.prf
+
 function usage {
     cat << EOF
 Usage:
@@ -138,10 +145,26 @@ trap cleanup INT TERM EXIT
 
 echo $$ > $pid_file
 
+# Quit if there is no user configuration
+if [ ! -f $user_conf_file ]
+then
+    err_msg "No user config found. Please add the configuration to $user_conf_file"
+    cp $blank_user_conf $user_conf_file
+    exit 1
+fi
+
 # Create all required directories
 mkdir -p $monitor_dir
 mkdir -p $client_dir
 mkdir -p $sync_req_dir
+mkdir -p $unison_dir
+
+# Link to unison profile
+if [ ! -e $unison_conf_user ]
+then
+    rm -f $unison_conf_user
+    ln -s $unison_conf $unison_conf_user
+fi
 
 # Kill any old monitors
 kill_open_monitors

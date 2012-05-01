@@ -19,10 +19,11 @@ bin/unisync-reg-client
 bin/unisync-server
 bin/unisync-server-status
 bin/unisync-sync-req
-libexec/unisync-client-mon
+bin/unisync-client-mon
 libexec/unisync-conflict-resolve
 libexec/unisync-server-syncinit
 libexec/unisync-sync-client
 libexec/unisync-update-clients
 etc/unisync-server.lua
+etc/unisync.prf
 unisync-client-*.tar.gz

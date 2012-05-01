@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.68])
-AC_INIT([unisync-client], 0.1, [github.com/Duncanl/unisync-client])
+AC_INIT([unisync-server], 0.1, [github.com/Duncanl/unisync-server])
 
 # Checks for programs.
 

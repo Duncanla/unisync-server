@@ -22,7 +22,9 @@ client_dir=$UNISYNC_DIR/clients
 sync_req_dir=$UNISYNC_DIR/sync_request
 sync_file=$UNISYNC_DIR/syncs
 
-sync_req_cmd=@pkglibexecdir@/@unisync-sync-req@
+sync_req_cmd=@bindir@/@unisync-sync-req@
+
+status_cmd=@bindir@/@unisync-server-status@
 
 port=$1
 shift
@@ -88,7 +90,7 @@ function log_msg() {
 }
 
 # Check that the server is running
-if ! (unisync-server-status &> /dev/null)
+if ! ($status_cmd &> /dev/null)
 then
     err_msg "Server is not running! Refusting to register client."
     exit 3
