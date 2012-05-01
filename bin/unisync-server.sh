@@ -129,6 +129,8 @@ function kill_open_monitors () {
     done
 }
 
+mkdir -p $UNISYNC_DIR
+
 touch $pid_file
 old_pid=`cat $pid_file`
 if [ ! -z $old_pid ]
@@ -142,8 +144,6 @@ then
 fi
 
 trap cleanup INT TERM EXIT
-
-mkdir -p $UNISYNC_DIR
 
 echo $$ > $pid_file
 
