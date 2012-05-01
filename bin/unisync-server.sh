@@ -143,6 +143,8 @@ fi
 
 trap cleanup INT TERM EXIT
 
+mkdir -p $UNISYNC_DIR
+
 echo $$ > $pid_file
 
 # Quit if there is no user configuration
