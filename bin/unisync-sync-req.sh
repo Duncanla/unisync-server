@@ -146,7 +146,7 @@ then
 fi
 
 target_id=$(echo $options | sed -r 's|.*\-targetid\s+(\S+).*|\1|')
-root=$(cat $sync_file | sed -r "s|$target_id\s+(.*)|\1|")
+root=$(cat $sync_file | sed -r "s|$target_id\s+(.*)|\1|" | head -n 1)
 target_options=`echo $options | sed -r "s|\-targetid\s+\S+|\-root $root|"`
 
 echo $target_options > $sync_req_file

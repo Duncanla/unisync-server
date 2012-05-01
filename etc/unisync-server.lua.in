@@ -22,7 +22,7 @@ server_update = {
                   local path = string.sub(pathStr, 2)
                   table.insert(unisonPaths, path)
                end
-               local pathsOpt = "-path " .. table.concat(unisonPaths," -path ")
+               local pathsOpt = "-path \'" .. table.concat(unisonPaths,"\' -path \'") .. "\'"
 
                --remove trailing / from source so we can better compare roots
                local sourceOpt = config.source
