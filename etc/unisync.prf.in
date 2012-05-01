@@ -3,7 +3,10 @@
 ignore = Path */.unisync/*.log
 ignore = Path */.unisync/unison/*
 
-# Don't confirm on delets
+# Don't confirm on deletes
 confirmbigdel=false
+
+# Allow creation of archives if one is missing
+ignorearchives=true
 
 merge = Name * -> echo -e "\nWARNING: CONFLICTS DETECTED\n" && @pkglibexecdir@/@unisync-conflict-resolve@ CURRENT1 CURRENT2 NEW || echo -e "\nERROR: UNABLE TO RESOLVE CONFLICT\n"
