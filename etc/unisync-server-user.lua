@@ -16,9 +16,5 @@ sync {
    server_update,
    unisync_id = "",
    source = "",
-<<<<<<< HEAD
-=======
-   target = localhost
    exclude = "*.unison.tmp"
->>>>>>> 9efb7d230cd59d93adab51e84073fef55ce87637
 }
