@@ -76,7 +76,6 @@ then
   esac
 fi
 
-
 # Cleanup for signal traps
 function cleanup() {
     if [ -f $lockfile ]
@@ -86,8 +85,11 @@ function cleanup() {
             rm -f $lockfile
         fi
     fi
-
-    rm -f $sync_req_file
+    
+    if [ ! -z $sync_req_file ]
+    then
+        rm -f $sync_req_file
+    fi
 
     trap - EXIT
     exit 1
@@ -104,6 +106,18 @@ function err_msg() {
 function log_msg() {
     echo "`basename $0` (`date`): $1" 1>&2
     echo "`basename $0` (`date`): $1" >> $UNISYNC_LOG
+}
+
+# Determine the maximum of the input parameters
+function max() {
+    max=$1
+    shift
+    while [ $# -gt 0 ]
+    do
+        [ $1 -gt $max ] && max=$1
+        shift
+    done
+    echo $max
 }
 
 trap cleanup INT TERM EXIT
@@ -130,7 +144,18 @@ do
 done
 
 #Make sure we aren't duplicating a left-over client file
-sync_req_file=$(echo $sync_req_dir/$port-`ls $sync_req_dir | egrep -c ^$port-[0-9]+`)
+set +e
+pending_sync=`ls $sync_req_dir | egrep "^$port-[0-9]+" &> /dev/null`
+set -e
+if ( echo $pending_sync | egrep -c . &> /dev/null )
+then
+    sync_num=$(max `echo $pending_sync | sed -r "s,^$port-([0-9]+),\1,"`)
+    sync_num=$(expr $sync_num + 1)
+else
+    sync_num=0
+fi
+
+sync_req_file=$sync_req_dir/$port-$sync_num
 
 if [ `ls $sync_req_dir | egrep -c ^$port-[0-9]+` -ne 0 ]
 then
@@ -148,6 +173,9 @@ fi
 target_id=$(echo $options | sed -r 's|.*\-targetid\s+(\S+).*|\1|')
 root=$(cat $sync_file | sed -r "s|$target_id\s+(.*)|\1|" | head -n 1)
 target_options=`echo $options | sed -r "s|\-targetid\s+\S+|\-root $root|"`
+
+log_msg "Registering sync request number $sync_num for client on port $port"
+log_msg "With options: $options"
 
 echo $target_options > $sync_req_file
 
