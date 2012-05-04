@@ -5,4 +5,5 @@ sync {
    unisync_id = "",
    source = "",
    target = localhost
+   exclude = "*.unison.tmp"
 }

@@ -25,9 +25,22 @@ unison_profile="unisync"
 client_dir=$UNISYNC_DIR/clients
 sync_req_dir=$UNISYNC_DIR/sync_request
 
+lockfile=$UNISYNC_DIR/sync_lock
+
 root2=$1
 shift
 paths="$@"
+
+# Cleanup for signal traps
+function cleanup() {
+    rm -f $lockfile
+
+    err_msg "Died!"
+
+    trap - EXIT
+    exit 1
+}
+
 
 # Output error messages
 function err_msg() {
@@ -43,6 +56,25 @@ function log_msg() {
 }
 
 log_msg "Files updated on server -- syncing clients..."
+
+# Escape things for the shell
+target_paths=\'$paths\'
+
+# Lock the all other syncs out
+lock_tries=0
+while ! ( set -o noclobber; echo "$$" > "$lockfile" ) &> /dev/null 
+do
+    if [[ lock_tries -eq 0 ]]
+    then
+        log_msg "Waiting on existing lock: $lockfile"
+    fi
+
+    lock_tries=$lock_tries+1
+    sleep 1
+done
+
+log_msg "Lock acquired."
+
 
 # Run unison for each client
 for client in `ls $client_dir | egrep ^[0-9]+-[0-9]+$`
@@ -63,18 +95,19 @@ do
         
         # If there was a fatal error in unsion, one of the archives
         # may have been screwed up. Try again, ignoring the archives
-        if [ $unison_exit_code -eq 3 ]
-        then
-            err_msg "Unisync encountered fatal error. Retrying with -ignorearchives"
-            set +e
-            bash -c "UNISON=$unison_dir @UNISON@ -ui text -batch $unison_profile -ignorearchives $client_options $paths"
-            unison_exit_code=$?
-            set -e
-        fi
+        #if [ $unison_exit_code -eq 3 ]
+        #then
+        #    err_msg "Unisync encountered fatal error. Retrying with -ignorearchives"
+        #    set +e
+        #    bash -c "UNISON=$unison_dir @UNISON@ -ui text -batch $unison_profile -ignorearchives $client_options $paths"
+        #    unison_exit_code=$?
+        #    set -e
+        #fi
     else
         err_msg "Skipping client $client: Not syncing to root $root2"
         err_msg "Client options were $client_options"
     fi
 done
 
+rm -f $lockfile
 log_msg "Finished syncing updates with clients."

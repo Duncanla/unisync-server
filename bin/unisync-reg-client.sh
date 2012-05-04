@@ -26,6 +26,10 @@ sync_req_cmd=@bindir@/@unisync-sync-req@
 
 status_cmd=@bindir@/@unisync-server-status@
 
+lockfile=$UNISYNC_DIR/client_lock
+
+sync_wait_max=60
+
 port=$1
 shift
 options="$@"
@@ -106,30 +110,39 @@ fi
 # Check that the client is asking for a valid sync root
 touch $sync_file
 client_valid=0
+sync_wait=0
 target_id=$(echo $options | sed -r 's|.*\-targetid\s+(\S+).*|\1|')
-for sync_id in `cat $sync_file | egrep "^$target_id\s+"`
+while [ $client_valid -ne 1 ]
 do
-    if ( egrep "^$target_id\s" $sync_file )
+    for sync_id in `cat $sync_file | egrep "^$target_id\s+"`
+    do
+        if ( egrep "^$target_id\s" $sync_file )
+        then
+            client_valid=1
+            break;
+        fi
+    done
+    if [ $sync_wait -eq 0 ]
     then
-        client_valid=1
-        break;
+        log_msg "Sync not registered yet... Waiting for up to $sync_wait_max seconds..."
     fi
+    if [ $sync_wait -ge $sync_wait_max ]
+    then
+        err_msg "Client is requesting an invalid sync! Refusing to register client."
+        err_msg "Client request was: $options"
+        err_msg "Valid syncs are:"
+        err_msg "`cat $sync_file`"
+        exit 2
+    fi
+    sync_wait=$(expr $sync_wait + 1)
+    sleep 1
 done
-if [ $client_valid -ne 1 ]
-then
-    err_msg "Client is requesting an invalid sync! Refusing to register client."
-    err_msg "Client request was: $options"
-    err_msg "Valid syncs are:"
-    err_msg "`cat $sync_file`"
-    exit 2
-fi
 
 trap cleanup INT TERM EXIT
 
 # Lock the clients directory
-lockfile=$UNISYNC_DIR/client_lock
 lock_tries=0
-while ( set -o noclobber; echo "$$" > "$lockfile" ) &> /dev/null 
+while ! ( set -o noclobber; echo "$$" > "$lockfile" ) &> /dev/null 
 do
     if [[ lock_tries -eq 0 ]]
     then
