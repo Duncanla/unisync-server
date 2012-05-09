@@ -45,14 +45,14 @@ function cleanup() {
 
 # Output error messages
 function err_msg() {
-    echo "`basename $0` (`date`): $1" 1>&2
+#    echo "`basename $0` (`date`): $1" 1>&2
     echo "`basename $0` (`date`): $1" >> $UNISYNC_LOG
     
 }
 
 # Output log messages
 function log_msg() {
-    echo "`basename $0` (`date`): $1" 1>&2
+#    echo "`basename $0` (`date`): $1" 1>&2
     echo "`basename $0` (`date`): $1" >> $UNISYNC_LOG
 }
 
@@ -92,7 +92,7 @@ log_msg "Lock acquired."
 # Unison returns an exit code of 1 if there is nothing to propagate,
 # so don't exit on that error
 set +e
-bash -c "UNISON=$unison_dir @UNISON@ $unison_profile -ui text -batch $sync_req_options" 
+bash -c "UNISON=$unison_dir @UNISON@ $unison_profile -ui text -batch $sync_req_options" &>> $UNISYNC_LOG
 unison_exit_code=$?
 log_msg "Unison sync exited with code $unison_exit_code"
 set -e

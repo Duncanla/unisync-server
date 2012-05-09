@@ -44,14 +44,14 @@ function cleanup() {
 
 # Output error messages
 function err_msg() {
-    echo "`basename $0` (`date`): $1" 1>&2
+#    echo "`basename $0` (`date`): $1" 1>&2
     echo "`basename $0` (`date`): $1" >> $UNISYNC_LOG
     
 }
 
 # Output log messages
 function log_msg() {
-    echo "`basename $0` (`date`): $1" 1>&2
+#    echo "`basename $0` (`date`): $1" 1>&2
     echo "`basename $0` (`date`): $1" >> $UNISYNC_LOG
 }
 
@@ -89,7 +89,7 @@ do
         log_msg "Syncing client $client with options:"
         log_msg "$client_options $paths"
         set +e
-        bash -c "UNISON=$unison_dir @UNISON@ -ui text -batch $unison_profile $client_options $paths"
+        bash -c "UNISON=$unison_dir @UNISON@ -ui text -batch $unison_profile $client_options $paths" &>> $UNISYNC_LOG
         unison_exit_code=$?
         set -e
         

@@ -24,7 +24,7 @@ sync_file=$UNISYNC_DIR/syncs
 monitor_dir=$UNISYNC_DIR/monitors
 monitor_cmd="@unisync-client-mon@"
 
-pid_file=$UNISYNC_DIR/unisync-server.pid
+user_pid_file=$UNISYNC_DIR/unisync-server.pid
 
 client_lock_file=$UNISYNC_DIR/client_lock
 sync_lock_file=$UNISYNC_DIR/sync_lock
@@ -62,35 +62,48 @@ EOF
 }
 
 # Parse options
-if test $# -ne 0
-then
-  case $1 in
-  --help)
-    usage
-    exit
-    ;;
-  --version)
-    version
-    exit
-    ;;
-  *)
-    usage
-    exit
-    ;;
-  esac
-fi
+DAEMON=
+PIDFILE=
+while [ $# -ne 0 ]
+do
+    case $1 in
+        --help)
+            usage
+            exit
+            ;;
+        --version)
+            version
+            exit
+            ;;
+        --daemon)
+            DAEMON=yes
+            ;;
+        --pidfile)
+            PIDFILE=$2
+            shift
+            ;;
+        *)
+            usage
+            exit
+            ;;
+    esac
+    shift
+done
 
 
 # Cleanup for trapped signals
+lsyncd_pid=
 function cleanup {
     
     kill_open_monitors
+
+    kill_lsyncd
 
     # Clean up directories
     rm -f $client_dir/*
     rm -f $sync_req_dir/*
     rm -f $sync_file
-    rm -f $pid_file
+    rm -f $user_pid_file
     rm -f $client_lock_file
     rm -f $sync_lock_file
 
@@ -103,14 +116,14 @@ function cleanup {
 
 # Output error messages
 function err_msg() {
-    echo "`basename $0` (`date`): $1" 1>&2
+#    echo "`basename $0` (`date`): $1" 1>&2
     echo "`basename $0` (`date`): $1" >> $UNISYNC_LOG
     
 }
 
 # Output log messages
 function log_msg() {
-    echo "`basename $0` (`date`): $1" 1>&2
+#    echo "`basename $0` (`date`): $1" 1>&2
     echo "`basename $0` (`date`): $1" >> $UNISYNC_LOG
 }
 
@@ -132,10 +145,48 @@ function kill_open_monitors () {
     done
 }
 
+function kill_lsyncd () {
+    # Kill lsyncd 
+    if ( ps --pid $lsyncd_pid -o cmd | tail -n 1 | egrep "lsyncd" &> /dev/null )
+    then
+        log_msg "Killing lsyncd"
+        kill $lsyncd_pid
+    fi
+}
+
+
+# Fork if desired
+if [ ! -z $DAEMON ]
+then
+    log_msg "Forking daemon..."
+    
+    # Make sure we can touch the PID file first
+    if [ ! -z $PIDFILE ]
+    then
+        touch $PIDFILE
+    fi
+
+    # Fork the server
+    $0 >> $UNISYNC_LOG &
+    
+    if [ ! -z $PIDFILE ]
+    then
+        echo $! > $PIDFILE
+    fi
+
+    exit
+fi
+
+if [ ! -z $PIDFILE ]
+then
+    echo $$ > $PIDFILE
+fi
+
+
 mkdir -p $UNISYNC_DIR
 
-touch $pid_file
-old_pid=`cat $pid_file`
+touch $user_pid_file
+old_pid=`cat $user_pid_file`
 if [ ! -z $old_pid ]
 then
     echo "Old PID found... $old_pid"
@@ -148,7 +199,7 @@ fi
 
 trap cleanup INT TERM EXIT
 
-echo $$ > $pid_file
+echo $$ > $user_pid_file
 
 # Quit if there is no user configuration
 if [ ! -f $user_conf_file ]
@@ -184,8 +235,12 @@ rm -f $sync_lock_file
 touch $sync_file
 
 # Start lsyncd
-log_msg "Starting lsync..."
-lsyncd -log all $etc_dir/unisync-server.lua
+log_msg "Starting lsyncd..."
+#lsyncd -log all $etc_dir/unisync-server.lua
+lsyncd $etc_dir/unisync-server.lua &>> $UNISYNC_LOG &
+lsyncd_pid=$!
+log_msg "Lsyncd started with pid: $lsyncd_pid"
+wait $lsyncd_pid
 err_msg "lsyncd died"
 
 kill_open_monitors
@@ -194,6 +249,6 @@ kill_open_monitors
 rm -f $client_dir/*
 rm -f $sync_req_dir/*
 rm -f $sync_file
-rm -f $pid_file
+rm -f $user_pid_file
 rm -f $client_lock_file
 rm -f $sync_lock_file

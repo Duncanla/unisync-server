@@ -4,17 +4,17 @@ bin_SCRIPTS = unisync-client-port \
 			  unisync-server \
 			  unisync-server-status \
 			  unisync-sync-req \
-			  unisync-client-mon
+			  unisync-client-mon 
 
 EXTRA_DIST = unisync-client-port.sh \
 			 unisync-reg-client.sh \
 			 unisync-server.sh  \
 			 unisync-server-status.sh \
 			 unisync-sync-req.sh \
-			 unisync-client-mon.sh
+			 unisync-client-mon.sh 
+
 
 CLEANFILES = $(bin_SCRIPTS)
-
 
 pkgsysconfdir = $(sysconfdir)/$(PACKAGE)
 

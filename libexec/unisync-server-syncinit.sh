@@ -27,14 +27,14 @@ touch $sync_file
 
 # Output error messages
 function err_msg() {
-    echo "`basename $0` (`date`): $1" 1>&2
+#    echo "`basename $0` (`date`): $1" 1>&2
     echo "`basename $0` (`date`): $1" >> $UNISYNC_LOG
     
 }
 
 # Output log messages
 function log_msg() {
-    echo "`basename $0` (`date`): $1" 1>&2
+#    echo "`basename $0` (`date`): $1" 1>&2
     echo "`basename $0` (`date`): $1" >> $UNISYNC_LOG
 }
 
