@@ -27,6 +27,8 @@ sync_req_dir=$UNISYNC_DIR/sync_request
 
 lockfile=$UNISYNC_DIR/sync_lock
 
+sync_req_cmd=@bindir@/@unisync-sync-req@
+
 root2=$1
 shift
 paths="$@"
@@ -85,24 +87,10 @@ do
     # If this client is syncing the specified path, sync with unison
     if ( echo "$client_options" | egrep "\-root[[:space:]]+$root2" &> /dev/null )
     then
-        port=`echo client | sed -r 's/^([0-9]+)-[0-9]+$/\1/'`
-        log_msg "Syncing client $client with options:"
+        port=`echo $client | sed -r 's/^([0-9]+)-[0-9]+$/\1/'`
+        log_msg "Request sync for client $client with options:"
         log_msg "$client_options $paths"
-        set +e
-        bash -c "UNISON=$unison_dir @UNISON@ -ui text -batch $unison_profile $client_options $paths" &>> $UNISYNC_LOG
-        unison_exit_code=$?
-        set -e
-        
-        # If there was a fatal error in unsion, one of the archives
-        # may have been screwed up. Try again, ignoring the archives
-        #if [ $unison_exit_code -eq 3 ]
-        #then
-        #    err_msg "Unisync encountered fatal error. Retrying with -ignorearchives"
-        #    set +e
-        #    bash -c "UNISON=$unison_dir @UNISON@ -ui text -batch $unison_profile -ignorearchives $client_options $paths"
-        #    unison_exit_code=$?
-        #    set -e
-        #fi
+        $sync_req_cmd $port $client_options $paths
     else
         err_msg "Skipping client $client: Not syncing to root $root2"
         err_msg "Client options were $client_options"
@@ -110,4 +98,5 @@ do
 done
 
 rm -f $lockfile
-log_msg "Finished syncing updates with clients."
+
+trap - EXIT

@@ -34,9 +34,14 @@ sync_file=$UNISYNC_DIR/syncs
 lockfile=$UNISYNC_DIR/sync_lock
 
 # Cleanup for signal traps
+unison_pid=
 function cleanup() {
     rm -f $sync_req_file
     rm -f $lockfile
+
+    log_msg "Killing unison (pid: $unison_pid)"
+    kill $unison_pid
+
     err_msg "Died!"
 
     trap - EXIT
@@ -92,7 +97,9 @@ log_msg "Lock acquired."
 # Unison returns an exit code of 1 if there is nothing to propagate,
 # so don't exit on that error
 set +e
-bash -c "UNISON=$unison_dir @UNISON@ $unison_profile -ui text -batch $sync_req_options" &>> $UNISYNC_LOG
+bash -c "UNISON=$unison_dir @UNISON@ $unison_profile -ui text -batch $sync_req_options" &>> $UNISYNC_LOG &
+unison_pid=$!
+wait $unison_pid
 unison_exit_code=$?
 log_msg "Unison sync exited with code $unison_exit_code"
 set -e
