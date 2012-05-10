@@ -92,7 +92,8 @@ do_status()
     for user in $UNISYNC_USERS
     do
         PIDFILE=$PIDDIR/$NAME-$user.pid
-	    status_of_proc "$DAEMON" "$NAME" || return $?        
+        start-stop-daemon --status -c $user --quiet --retry=TERM/30/KILL/5 \
+            --pidfile $PIDFILE --name $NAME || return "$?"
     done
     return 0
 }
@@ -116,6 +117,15 @@ case "$1" in
 	;;
   status)
         do_status
+        status=$?
+        if [ $status -eq 0 ]
+        then
+            echo -n "Unisync server is running"
+            log_end_msg 0
+        else
+            echo -n "Unisync server is NOT running"
+            log_end_msg 1
+        fi
 	    ;;
   restart|force-reload)
 	#
