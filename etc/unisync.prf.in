@@ -10,4 +10,7 @@ confirmbigdel=false
 # Ignore SSH host keys since we are using a reverse tunnel
 sshargs=-o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no
 
+# Suppress status messages
+terse=true
+
 merge = Name * -> echo -e "\nWARNING: CONFLICTS DETECTED\n" && @pkglibexecdir@/@unisync-conflict-resolve@ CURRENT1 CURRENT2 NEW || echo -e "\nERROR: UNABLE TO RESOLVE CONFLICT\n"
