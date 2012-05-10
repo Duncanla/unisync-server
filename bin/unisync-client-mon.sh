@@ -26,6 +26,9 @@ sync_req_dir=$UNISYNC_DIR/sync_request
 monitor_dir=$UNISYNC_DIR/monitors
 monitor_file=$monitor_dir/$port
 
+sync_client_cmd="@unisync-sync-client@"
+sync_lock_file=$UNISYNC_DIR/sync_lock
+
 function usage {
     cat << EOF
 Usage:
@@ -75,6 +78,9 @@ function cleanup() {
     # Kill the ssh process
     ps --pid $(jobs -p) &> /dev/null && kill $(jobs -p)
 
+    # Kill syncs for this client
+    kill_syncs
+
     # Remove client and clean up any sync requests
     rm -f $client_dir/$port
     rm -f $client_dir/$port-*
@@ -98,6 +104,15 @@ function log_msg() {
     echo "`basename $0` (`date`): $1"
 }
 
+# Kill any syncs that are running on this port
+function kill_syncs () {
+    pid=`ps -C $sync_client_cmd -o pid | tail -n 1`
+    if ( ps --pid $pid -o cmd | tail -n 1 | egrep "$monitor_cmd\s+$port-[0-9]+" &> /dev/null )
+    then
+        log_msg "Killing sync on localhost:$port (pid: $pid)"
+        kill $pid
+    fi    
+}
 
 trap cleanup INT TERM EXIT
 
