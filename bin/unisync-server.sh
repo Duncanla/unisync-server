@@ -141,7 +141,6 @@ function kill_open_monitors () {
             kill $pid
         fi
 
-        rm -f $monitor_dir/$mon_file
     done
 }
 
