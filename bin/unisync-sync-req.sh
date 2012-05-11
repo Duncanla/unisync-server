@@ -170,9 +170,16 @@ then
     done
 fi
 
-target_id=$(echo $options | sed -r 's|.*\-targetid\s+(\S+).*|\1|')
-root=$(cat $sync_file | sed -r "s|$target_id\s+(.*)|\1|" | head -n 1)
-target_options=`echo $options | sed -r "s|\-targetid\s+\S+|\-root $root|"`
+if ( echo $options | egrep '.*\-targetid\s+\S+.*' )
+then
+    target_id=$(echo $options | sed -r 's|.*\-targetid\s+(\S+).*|\1|')
+    log_msg "Target id: $target_id"
+    root=$(cat $sync_file | sed -r "s|$target_id\s+(.*)|\1|" | head -n 1)
+    log_msg "Root: $root"
+    target_options=`echo $options | sed -r "s|\-targetid\s+\S+|\-root $root|"`
+else
+    target_options=$options
+fi
 
 log_msg "Registering sync request number $sync_num for client on port $port"
 log_msg "With options: $options"
