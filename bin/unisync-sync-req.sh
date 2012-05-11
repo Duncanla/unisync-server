@@ -145,7 +145,10 @@ done
 
 #Make sure we aren't duplicating a left-over client file
 set +e
-pending_sync=`ls $sync_req_dir | egrep "^$port-[0-9]+" &> /dev/null`
+pending_sync=`ls $sync_req_dir | egrep "^$port-[0-9]+"`
+log_msg "$port"
+log_msg "`ls $sync_req_dir`"
+log_msg "$pending_sync"
 set -e
 if ( echo $pending_sync | egrep -c . &> /dev/null )
 then
