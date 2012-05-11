@@ -25,6 +25,8 @@ target_id=$1
 sync_file=$UNISYNC_DIR/syncs
 touch $sync_file
 
+sync_req_dir=$UNISYNC_DIR/sync_request
+
 # Output error messages
 function err_msg() {
 #    echo "`basename $0` (`date`): $1" 1>&2
@@ -38,8 +40,18 @@ function log_msg() {
     echo "`basename $0` (`date`): $1" >> $UNISYNC_LOG
 }
 
+# Remove any stale sync requests for this sync
+for sync_req in `ls $sync_req_dir`
+do
+    if ( $(cat $sync_req | egrep "\-root\s+$target_id") )
+    then
+        log_msg "Removing stale sync request: $sync_req"
+        rm -f $sync_req_dir/$sync_req
+    fi
+done
+
 log_msg "Adding sync for $target_id"
-if ! (egrep "^$target_id " $sync_file)
+if ! (egrep "^$sync_id " $sync_file)
 then
     echo "$sync_id $target_id" >> $sync_file
 fi
