@@ -159,23 +159,24 @@ log_msg "Port: $port"
 #Make sure we aren't duplicating a left-over client file
 client_file=$(echo $client_dir/$port-`ls $client_dir | egrep -c ^$port-[0-9]+`)
 
-log_msg "Client file: $client_file" 
+root=$(cat $sync_file | sed -r "s|$target_id\s+(.*)|\1|" | head -n 1)
+target_options=$(echo $options | sed -r "s|\-targetid\s+\S+|\-root ${root}|")
 
-if [ `ls $client_dir | egrep -c ^$port-[0-9]+` -ne 0 ]
+
+if [ `ls $client_dir | egrep -c $port-[0-9]+` -ne 0 ]
 then
     for cfile in $client_dir/$port-*
     do
-        if [ "`cat $cfile`" = "$options" ]
+        if [ "`cat $cfile`" = "$target_options" ]
         then
             log_msg "Client file $cfile already created"
             client_file=$cfile
-            break;s
+            break;
         fi
     done
 fi
 
-root=$(cat $sync_file | sed -r "s|$target_id\s+(.*)|\1|" | head -n 1)
-target_options=$(echo $options | sed -r "s|\-targetid\s+\S+|\-root ${root}|")
+log_msg "Client file: $client_file" 
 
 echo $target_options > $client_file
 

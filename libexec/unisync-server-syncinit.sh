@@ -26,6 +26,9 @@ sync_file=$UNISYNC_DIR/syncs
 touch $sync_file
 
 sync_req_dir=$UNISYNC_DIR/sync_request
+client_dir=$UNISYNC_DIR/clients
+
+sync_req_cmd=@bindir@/@unisync-sync-req@
 
 # Output error messages
 function err_msg() {
@@ -40,12 +43,13 @@ function log_msg() {
     echo "`basename $0` (`date`): $1" >> $UNISYNC_LOG
 }
 
-# Remove any stale sync requests for this sync
-for sync_req in `ls $sync_req_dir`
+# Delete stale sync requests
+for sync_req in `ls $sync_req_dir | egrep "[0-9]+-[0-9]+"`
 do
-    if ( $(cat $sync_req | egrep "\-root\s+$target_id") )
+    if ( egrep "\-root\s+$target_id\s+" $sync_req_dir/$sync_req )
     then
-        log_msg "Removing stale sync request: $sync_req"
+        log_msg "Deleting stale sync request $sync_req"
+        port=$(echo $sync_req | sed -r 's,([0-9]+)-[0-9]+,\1,')
         rm -f $sync_req_dir/$sync_req
     fi
 done
@@ -55,3 +59,14 @@ if ! (egrep "^$sync_id " $sync_file)
 then
     echo "$sync_id $target_id" >> $sync_file
 fi
+
+# Re-sync with all clients as needed
+for cfile in `ls $client_dir | egrep "[0-9]+-[0-9]+"`
+do
+    if ( egrep "\-root\s+$target_id\s+" $client_dir/$cfile )
+    then
+        log_msg "Requesting re-sync with client: $cfile"
+        port=$(echo $cfile | sed -r 's,([0-9]+)-[0-9]+,\1,')
+        $sync_req_cmd $port `cat $client_dir/$cfile`
+    fi
+done

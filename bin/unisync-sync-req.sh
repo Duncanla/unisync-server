@@ -143,13 +143,13 @@ do
     sleep 1
 done
 
-#Make sure we aren't duplicating a left-over client file
+# Make sure we aren't duplicating a left-over client file
 set +e
 pending_sync=`ls $sync_req_dir | egrep "^$port-[0-9]+"`
 set -e
 if ( echo $pending_sync | egrep -c . &> /dev/null )
 then
-    sync_num=$(max `echo $pending_sync | sed -r "s,^$port-([0-9]+),\1,"`)
+    sync_num=$(max `echo $pending_sync | sed -r "s,$port-([0-9]+),\1,g"`)
     sync_num=$(expr $sync_num + 1)
 else
     sync_num=0
@@ -157,19 +157,7 @@ fi
 
 sync_req_file=$sync_req_dir/$port-$sync_num
 
-if [ `ls $sync_req_dir | egrep -c ^$port-[0-9]+` -ne 0 ]
-then
-    for cfile in $sync_req_dir/$port-*
-    do
-        if [ "`cat $cfile`" = "$options" ]
-        then
-            log_msg "Sync request file $cfile already pending"
-            sync_req_file=$cfile
-            break;
-        fi
-    done
-fi
-
+# Replace -targetid specifier with -root
 if ( echo $options | egrep '.*\-targetid\s+\S+.*' )
 then
     target_id=$(echo $options | sed -r 's|.*\-targetid\s+(\S+).*|\1|')
@@ -180,6 +168,22 @@ then
 else
     target_options=$options
 fi
+
+if [ `ls $sync_req_dir | egrep -c ^$port-[0-9]+` -ne 0 ]
+then
+    for cfile in $sync_req_dir/$port-*
+    do
+        if [ "`cat $cfile`" = "$target_options" ]
+        then
+            log_msg "Sync request file $cfile already pending"
+            sync_req_file=$cfile
+            rm -f $lockfile
+            trap - EXIT
+            exit
+        fi
+    done
+fi
+
 
 log_msg "Registering sync request number $sync_num for client on port $port"
 log_msg "With options: $options"
