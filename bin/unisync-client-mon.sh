@@ -107,7 +107,7 @@ function log_msg() {
 # Kill any syncs that are running on this port
 function kill_syncs () {
     pid=`ps -C $sync_client_cmd -o pid | tail -n 1`
-    if ( ps --pid $pid -o cmd | tail -n 1 | egrep "$monitor_cmd\s+$port-[0-9]+" &> /dev/null )
+    if ( ps --pid $pid -o cmd | tail -n 1 | egrep "$sync_client_cmd\s+$port-[0-9]+" &> /dev/null )
     then
         log_msg "Killing sync on localhost:$port (pid: $pid)"
         kill $pid

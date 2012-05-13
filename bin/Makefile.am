@@ -27,11 +27,13 @@ sync_req_cmd = `echo unisync-sync-req | sed '$(program_transform_name)'`
 server_cmd = `echo unisync-server | sed '$(program_transform_name)'`
 mon_cmd = `echo unisync-client-mon | sed '$(program_transform_name)'`
 status_cmd = `echo unisync-server-status | sed '$(program_transform_name)'`
+sync_client_cmd = `echo unisync-sync-client | sed '$(program_transform_name)'`
 
 cmd_subst = sed -i -e "s,[@]unisync-sync-req[@],$(sync_req_cmd),g" \
 				   -e "s,[@]unisync-server[@],$(server_cmd),g" \
 				   -e "s,[@]unisync-client-mon[@],$(mon_cmd),g" \
-				   -e "s,[@]unisync-server-status[@],$(status_cmd),g"
+				   -e "s,[@]unisync-server-status[@],$(status_cmd),g" \
+				   -e "s,[@]unisync-sync-client[@],$(sync_client_cmd),g"
 
 $(bin_SCRIPTS): %: %.sh
 	rm -f $@

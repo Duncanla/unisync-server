@@ -1,4 +1,4 @@
-# -* bash -*
+B1;2802;0c# -* bash -*
 
 #
 # Unisync client registration

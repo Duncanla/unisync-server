@@ -123,25 +123,25 @@ do
 done
 
 # Clean up any clients that are no longer connected
-if ( ls $client_dir &> /dev/null )
-then
-    for port in `ls $client_dir | egrep '[^-][0-9]+$'`
-    do
-        if ! (nc -zv -w1 localhost $port &> /dev/null)
-        then
-            log_msg "Removing unconnected client on port $port"
-            rm -f $client_dir/$port
-            rm -f $client_dir/$port-*
-            rm -f $sync_req_dir/$port-*
-        fi
-    done
-fi
+#if ( ls $client_dir &> /dev/null )
+#then
+#    for port in `ls $client_dir | egrep '[^-][0-9]+$'`
+#    do
+#        if ! (nc -zv -w1 localhost $port &> /dev/null)
+#        then
+#            log_msg "Removing unconnected client on port $port"
+#            rm -f $client_dir/$port
+#            rm -f $client_dir/$port-*
+#            rm -f $sync_req_dir/$port-*
+#        fi
+#    done
+#fi
 
 # Find an open port
 found_port=0
 for port in $(eval echo {$SERVER_MIN_PORT..$SERVER_MAX_PORT})
 do
-    if ! (nc -zv -w1 localhost $port &> /dev/null)
+    if [ ! -f $client_dir/$port ] && ! (nc -zv -w1 localhost $port &> /dev/null)
     then
         touch $client_dir/$port
         found_port=1
