@@ -166,11 +166,13 @@ then
     fi
 
     # Fork the server
-    $0 >> $UNISYNC_LOG &
+    $0 > $UNISYNC_LOG &
+    forked_pid=$!
+    disown
     
     if [ ! -z $PIDFILE ]
     then
-        echo $! > $PIDFILE
+        echo $forked_pid > $PIDFILE
     fi
 
     exit
