@@ -29,6 +29,7 @@ status_cmd=@bindir@/@unisync-server-status@
 lockfile=$UNISYNC_DIR/client_lock
 
 sync_wait_max=60
+conn_wait_max=60
 
 port=$1
 shift
@@ -96,7 +97,7 @@ function log_msg() {
 # Check that the server is running
 if ! ($status_cmd &> /dev/null)
 then
-    err_msg "Server is not running! Refusting to register client."
+    err_msg "Server is not running! Refusing to register client."
     exit 3
 fi
 
@@ -106,6 +107,8 @@ then
     err_msg "No sync file $sync_file."
     exit 2
 fi
+
+trap cleanup INT TERM EXIT
 
 # Check that the client is asking for a valid sync root
 touch $sync_file
@@ -132,13 +135,30 @@ do
         err_msg "Client request was: $options"
         err_msg "Valid syncs are:"
         err_msg "`cat $sync_file`"
+        trap - EXIT
         exit 2
     fi
     sync_wait=$(expr $sync_wait + 1)
     sleep 1
 done
 
-trap cleanup INT TERM EXIT
+# Check that the connection to the client is active
+conn_wait=0
+while ! ( ssh -o "UserKnownHostsFile /dev/null" -o "StrictHostKeyChecking no" -o "ConnectTimeout=1" -p $port localhost ":" )
+do
+    if [ $conn_wait -eq 0 ]
+    then
+        log_msg "Client not connected on port $port yet... Waiting for up to $conn_wait_max seconds..."
+    fi
+    if [ $conn_wait -ge $conn_wait_max ]
+    then
+        err_msg "Not connected to client on port $port. Aborting client registration."
+        trap - EXIT
+        exit 2
+    fi
+    conn_wait=$(expr $conn_wait + 1)
+    sleep 1
+done
 
 # Lock the clients directory
 lock_tries=0
