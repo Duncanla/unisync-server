@@ -28,6 +28,7 @@ user_pid_file=$UNISYNC_DIR/unisync-server.pid
 
 client_lock_file=$UNISYNC_DIR/client_lock
 sync_lock_file=$UNISYNC_DIR/sync_lock
+sync_req_lock_file=$UNISYNC_DIR/sync_req_lock
 
 user_conf_file=$UNISYNC_DIR/unisync-server.lua
 blank_user_conf=$etc_dir/unisync-server-user.lua
@@ -106,6 +107,7 @@ function cleanup {
     rm -f $user_pid_file
     rm -f $client_lock_file
     rm -f $sync_lock_file
+    rm -f $sync_req_lock_file
 
     err_msg "Server died!"
 
@@ -232,6 +234,7 @@ rm -f $sync_req_dir/*
 rm -f $sync_file
 rm -f $client_lock_file
 rm -f $sync_lock_file
+rm -f $sync_req_lock_file
 
 touch $sync_file
 
@@ -253,3 +256,4 @@ rm -f $sync_file
 rm -f $user_pid_file
 rm -f $client_lock_file
 rm -f $sync_lock_file
+rm -f $sync_req_lock_file
