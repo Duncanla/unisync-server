@@ -1,7 +1,7 @@
 unisync_dir = os.getenv("HOME") .."/.unisync"
 sync_req_dir = unisync_dir .. "/sync_request"
 
-settings = {
+settings{
    logfile = unisync_dir .. "/lsyncd.log",
    statusFile = unisync_dir .. "/lsyncd.status",
    nodaemon = true,
@@ -11,6 +11,21 @@ settings = {
 server_update = {
    delay = 5,
    
+   checkgauge = {
+	onCreate = false,
+	onModify = false,
+	onDelete = false,
+	onStartup = false,
+	onMove = false,
+	delete = false,
+   	excludeFrom = false,
+	target = false,
+	
+	exclude = true,
+	unisync_id = true,
+   },	
+			
+
    action = function(inlet)
                local max_update = 30000
                
