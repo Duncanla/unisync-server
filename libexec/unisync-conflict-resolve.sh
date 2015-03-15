@@ -15,5 +15,5 @@
 
 date=`date "+%Y-%m-%d-%H%M%S"`
 outname=`echo $3 | sed -e 's/[.]unison.mergenew[12]-//'`
-cp $2 $outname-conflict-$date
-cp $1 $3
+cp "$2" "$outname-conflict-$date"
+cp "$1" "$3"
